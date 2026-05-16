@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import ai, export
+from app.api.routes import ai, export, testcase_versions
 from app.core.config import get_settings
 from app.core.database import Base, engine
 from app.models import GenerationRecord, TestcaseRecord
@@ -19,6 +19,7 @@ app.add_middleware(
 
 app.include_router(ai.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
+app.include_router(testcase_versions.router, prefix=settings.api_prefix)
 
 
 @app.on_event("startup")

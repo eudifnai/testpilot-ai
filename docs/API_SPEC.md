@@ -85,3 +85,19 @@ Generate a markdown test report from test summary input.
 ### `GET /api/ai/history/recent`
 
 Return recent generation records for dashboard display and recall.
+
+### `GET /api/ai/history/{id}`
+
+Return the full saved input and output for a generation record.
+
+### `POST /api/testcase-versions`
+
+Save the current edited testcase set as a reusable version snapshot.
+
+### `GET /api/testcase-versions`
+
+List saved testcase versions.
+
+### `GET /api/testcase-versions/{id}`
+
+Load a saved testcase version with its testcase payload.
