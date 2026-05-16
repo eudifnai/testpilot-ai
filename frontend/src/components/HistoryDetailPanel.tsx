@@ -4,6 +4,7 @@ import type { HistoryDetail } from "../types/ai";
 import { copyText } from "../utils/clipboard";
 import { saveHistoryDraft } from "../utils/historyDraft";
 import { GhostButton } from "./GhostButton";
+import { JsonStructuredPreview } from "./JsonStructuredPreview";
 import { SectionCard } from "./SectionCard";
 
 interface HistoryDetailPanelProps {
@@ -63,8 +64,10 @@ export function HistoryDetailPanel({ detail }: HistoryDetailPanelProps) {
             <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{detail.input_text}</pre>
           </div>
           <div className="rounded-lg bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Output</p>
-            <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{detail.output_json}</pre>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Output Preview</p>
+            <div className="mt-3">
+              <JsonStructuredPreview raw={detail.output_json} />
+            </div>
           </div>
         </div>
       </div>

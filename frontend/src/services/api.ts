@@ -7,6 +7,8 @@ import type {
   RequirementAnalysisResult,
   Testcase,
   TestcaseGenerationResult,
+  TestcaseVersionDetail,
+  TestcaseVersionListResult,
   TestReportResult,
 } from "../types/ai";
 
@@ -81,5 +83,27 @@ export async function getRecentHistory(limit = 8) {
 
 export async function getHistoryDetail(recordId: number) {
   const response = await apiClient.get<HistoryDetail>(`/ai/history/${recordId}`);
+  return response.data;
+}
+
+export async function saveTestcaseVersion(payload: {
+  version_name: string;
+  requirement_text: string;
+  case_types: string[];
+  case_count: number;
+  notes: string;
+  testcases: Testcase[];
+}) {
+  const response = await apiClient.post<TestcaseVersionDetail>("/testcase-versions", payload);
+  return response.data;
+}
+
+export async function getTestcaseVersions(limit = 20) {
+  const response = await apiClient.get<TestcaseVersionListResult>(`/testcase-versions?limit=${limit}`);
+  return response.data;
+}
+
+export async function getTestcaseVersion(versionId: number) {
+  const response = await apiClient.get<TestcaseVersionDetail>(`/testcase-versions/${versionId}`);
   return response.data;
 }

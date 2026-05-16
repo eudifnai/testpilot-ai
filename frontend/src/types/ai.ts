@@ -75,3 +75,26 @@ export interface HistoryDetail {
   output_json: string;
   created_at: string;
 }
+
+export interface TestcaseVersionSummary {
+  id: number;
+  version_name: string;
+  notes: string;
+  testcase_count: number;
+  created_at: string;
+}
+
+export interface TestcaseVersionListResult {
+  versions: TestcaseVersionSummary[];
+}
+
+export interface TestcaseVersionDetail {
+  id: number;
+  version_name: string;
+  requirement_text: string;
+  case_types: string[];
+  case_count: number;
+  notes: string;
+  testcases: Testcase[];
+  created_at: string;
+}

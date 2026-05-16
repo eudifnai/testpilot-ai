@@ -1,4 +1,4 @@
-import { Copy, Download, Sparkles } from "lucide-react";
+import { Copy, Download, Save, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { GhostButton } from "../components/GhostButton";
 import { PageHeader } from "../components/PageHeader";
@@ -6,8 +6,15 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { SectionCard } from "../components/SectionCard";
 import { TestcaseEditor } from "../components/TestcaseEditor";
 import { TestcaseTable } from "../components/TestcaseTable";
-import { exportTestcases, generateTestcases } from "../services/api";
-import type { Testcase } from "../types/ai";
+import { TestcaseVersionPanel } from "../components/TestcaseVersionPanel";
+import {
+  exportTestcases,
+  generateTestcases,
+  getTestcaseVersion,
+  getTestcaseVersions,
+  saveTestcaseVersion,
+} from "../services/api";
+import type { Testcase, TestcaseVersionSummary } from "../types/ai";
 import { copyText } from "../utils/clipboard";
 import { downloadBlob } from "../utils/download";
 import { formatTestcasesForCopy } from "../utils/format";
@@ -30,7 +37,13 @@ export function TestcaseGeneratorPage() {
   const [selectedCaseId, setSelectedCaseId] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSavingVersion, setIsSavingVersion] = useState(false);
   const [error, setError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+  const [versionName, setVersionName] = useState("");
+  const [versionNotes, setVersionNotes] = useState("");
+  const [savedVersions, setSavedVersions] = useState<TestcaseVersionSummary[]>([]);
+  const [selectedVersionId, setSelectedVersionId] = useState<number | undefined>(undefined);
 
   const testcaseCopyText = useMemo(() => formatTestcasesForCopy(testcases), [testcases]);
   const selectedTestcase = useMemo(
@@ -43,7 +56,17 @@ export function TestcaseGeneratorPage() {
     if (draft?.type === "testcase_generation" || draft?.type === "requirement_analysis") {
       setRequirementText(draft.inputText);
     }
+    refreshVersions();
   }, []);
+
+  async function refreshVersions() {
+    try {
+      const response = await getTestcaseVersions();
+      setSavedVersions(response.versions);
+    } catch {
+      setSavedVersions([]);
+    }
+  }
 
   function toggleCaseType(caseType: string) {
     setCaseTypes((current) =>
@@ -62,6 +85,7 @@ export function TestcaseGeneratorPage() {
       const response = await generateTestcases(requirementText, caseTypes, caseCount);
       setTestcases(response.testcases);
       setSelectedCaseId(response.testcases[0]?.case_id ?? "");
+      setSaveMessage("");
     } catch {
       setError("Testcase generation failed. Please confirm the backend is running and try again.");
     } finally {
@@ -88,6 +112,50 @@ export function TestcaseGeneratorPage() {
     await copyText(testcaseCopyText);
   }
 
+  async function handleSaveVersion() {
+    if (testcases.length === 0) {
+      return;
+    }
+    setIsSavingVersion(true);
+    setError("");
+    setSaveMessage("");
+    try {
+      const response = await saveTestcaseVersion({
+        version_name: versionName.trim() || `Snapshot ${new Date().toLocaleString()}`,
+        requirement_text: requirementText,
+        case_types: caseTypes,
+        case_count: caseCount,
+        notes: versionNotes,
+        testcases,
+      });
+      setSaveMessage(`Saved as ${response.version_name}`);
+      setSelectedVersionId(response.id);
+      await refreshVersions();
+    } catch {
+      setError("Saving testcase version failed. Please try again.");
+    } finally {
+      setIsSavingVersion(false);
+    }
+  }
+
+  async function handleLoadVersion(versionId: number) {
+    setError("");
+    try {
+      const version = await getTestcaseVersion(versionId);
+      setSelectedVersionId(version.id);
+      setRequirementText(version.requirement_text);
+      setCaseTypes(version.case_types);
+      setCaseCount(version.case_count || version.testcases.length);
+      setVersionName(version.version_name);
+      setVersionNotes(version.notes);
+      setTestcases(version.testcases);
+      setSelectedCaseId(version.testcases[0]?.case_id ?? "");
+      setSaveMessage(`Loaded ${version.version_name}`);
+    } catch {
+      setError("Loading testcase version failed. Please try again.");
+    }
+  }
+
   function handleTestcaseChange(next: Testcase) {
     setTestcases((current) => current.map((item) => (item.case_id === next.case_id ? next : item)));
   }
@@ -102,6 +170,13 @@ export function TestcaseGeneratorPage() {
           <>
             <GhostButton onClick={handleCopy} disabled={testcases.length === 0} icon={<Copy className="h-4 w-4" />}>
               Copy cases
+            </GhostButton>
+            <GhostButton
+              onClick={handleSaveVersion}
+              disabled={testcases.length === 0 || isSavingVersion}
+              icon={<Save className="h-4 w-4" />}
+            >
+              {isSavingVersion ? "Saving..." : "Save version"}
             </GhostButton>
             <PrimaryButton
               onClick={handleExport}
@@ -157,6 +232,24 @@ export function TestcaseGeneratorPage() {
                 className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
               />
             </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">Version name</span>
+              <input
+                value={versionName}
+                onChange={(event) => setVersionName(event.target.value)}
+                placeholder="Login regression baseline"
+                className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-700">Version notes</span>
+              <textarea
+                value={versionNotes}
+                onChange={(event) => setVersionNotes(event.target.value)}
+                placeholder="Why this snapshot matters"
+                className="min-h-[88px] w-full rounded-lg border border-slate-200 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
+              />
+            </label>
             <div className="flex flex-wrap gap-3">
               <GhostButton onClick={() => setRequirementText(sampleRequirement)}>Load sample</GhostButton>
               <PrimaryButton
@@ -167,6 +260,7 @@ export function TestcaseGeneratorPage() {
                 {isGenerating ? "Generating..." : "Generate testcases"}
               </PrimaryButton>
             </div>
+            {saveMessage ? <p className="text-sm text-emerald-700">{saveMessage}</p> : null}
             {error ? <p className="text-sm text-rose-600">{error}</p> : null}
           </div>
         </SectionCard>
@@ -192,6 +286,12 @@ export function TestcaseGeneratorPage() {
           )}
         </SectionCard>
       </div>
+
+      <TestcaseVersionPanel
+        versions={savedVersions}
+        selectedVersionId={selectedVersionId}
+        onLoad={handleLoadVersion}
+      />
 
       <TestcaseEditor
         testcase={selectedTestcase}
