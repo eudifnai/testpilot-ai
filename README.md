@@ -8,6 +8,10 @@ TestPilot AI is an AI-assisted testing workbench for QA engineers and small deli
 - Structured testcase generation with configurable case types and case count
 - Testcase table preview in the web UI
 - Excel export for generated testcases
+- API testcase generation from API documents or curl snippets
+- Bug analysis with structured report, causes, and developer checklist
+- Markdown test report generation
+- Recent generation history backed by SQLite
 - Unified backend AI service wrapper with local fallback output
 - Local fallback mode when no OpenAI-compatible credentials are configured
 
@@ -91,6 +95,10 @@ Notes:
 
 - `POST /api/ai/analyze-requirement`
 - `POST /api/ai/generate-testcases`
+- `POST /api/ai/generate-api-tests`
+- `POST /api/ai/analyze-bug`
+- `POST /api/ai/generate-report`
+- `GET /api/ai/history/recent`
 - `POST /api/export/testcases`
 
 ## Local Workflow
@@ -98,18 +106,24 @@ Notes:
 1. Open the dashboard
 2. Paste a requirement into `Requirement Analysis` or `Testcase Generator`
 3. Generate results from the backend
-4. Review cases in the table
-5. Export the generated testcases to Excel
+4. Review cases in the table or copy the generated content
+5. Export generated testcases to Excel when needed
+6. Use `API Test Generator`, `Bug Analyzer`, and `Test Report` for the broader QA workflow
+7. Review the latest generation results from the dashboard history panel
 
-## P0 Status
+## Delivery Status
 
 - Done: project scaffold
 - Done: backend AI wrapper and export APIs
 - Done: dashboard, requirement analysis page, testcase generation page
+- Done: API testcase generation page and endpoint
+- Done: bug analysis page and endpoint
+- Done: test report page and endpoint
+- Done: SQLite-backed generation history
 - Done: startup documentation
 
 ## Roadmap
 
-- P1: API testcase generation, bug analysis, test report generation
-- P1: generation history and SQLite persistence
-- P2: integrations, project management, and automation enhancements
+- Next: refine prompts, add richer testcase editing, and preserve testcase versions
+- Next: Jira and collaboration-tool integrations
+- Later: automation generation and broader project management workflows
