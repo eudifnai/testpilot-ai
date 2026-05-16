@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.database import get_db
 from app.core.config import Settings, get_settings
 from app.schemas.api_test import APITestGenerationRequest, APITestGenerationResponse
 from app.schemas.bug import BugAnalysisRequest, BugAnalysisResponse
-from app.schemas.history import HistoryListResponse
+from app.schemas.history import HistoryDetailResponse, HistoryListResponse
 from app.schemas.report import TestReportRequest, TestReportResponse
 from app.schemas.requirement import RequirementAnalysisRequest, RequirementAnalysisResponse
 from app.schemas.testcase import TestcaseGenerationRequest, TestcaseGenerationResponse
@@ -121,3 +121,15 @@ def list_recent_history(
     db: Session = Depends(get_db),
 ) -> HistoryListResponse:
     return history.list_recent_records(db, limit=limit)
+
+
+@router.get("/history/{record_id}", response_model=HistoryDetailResponse)
+def get_history_detail(
+    record_id: int,
+    history: HistoryService = Depends(get_history_service),
+    db: Session = Depends(get_db),
+) -> HistoryDetailResponse:
+    result = history.get_record_detail(db, record_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="History record not found")
+    return result

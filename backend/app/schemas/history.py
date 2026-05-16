@@ -11,3 +11,11 @@ class HistoryRecord(BaseModel):
 
 class HistoryListResponse(BaseModel):
     records: list[HistoryRecord]
+
+
+class HistoryDetailResponse(BaseModel):
+    id: int
+    type: str
+    input_text: str
+    output_json: str
+    created_at: str

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.models.generation import GenerationRecord
 from app.models.testcase import TestcaseRecord
-from app.schemas.history import HistoryListResponse, HistoryRecord
+from app.schemas.history import HistoryDetailResponse, HistoryListResponse, HistoryRecord
 from app.schemas.testcase import Testcase
 
 
@@ -64,6 +64,18 @@ class HistoryService:
                 )
                 for record in records
             ]
+        )
+
+    def get_record_detail(self, db: Session, record_id: int) -> HistoryDetailResponse | None:
+        record = db.query(GenerationRecord).filter(GenerationRecord.id == record_id).first()
+        if record is None:
+            return None
+        return HistoryDetailResponse(
+            id=record.id,
+            type=record.type,
+            input_text=record.input_text,
+            output_json=record.output_json,
+            created_at=record.created_at.isoformat() if record.created_at else "",
         )
 
     def _preview(self, value: str, limit: int = 140) -> str:
