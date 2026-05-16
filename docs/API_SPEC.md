@@ -69,3 +69,19 @@ Request:
 ```
 
 Response: Excel file download (`testcases.xlsx`)
+
+### `POST /api/ai/generate-api-tests`
+
+Generate API-oriented testcases from API documentation, Swagger snippets, field descriptions, or curl commands.
+
+### `POST /api/ai/analyze-bug`
+
+Generate a structured bug analysis and developer checklist.
+
+### `POST /api/ai/generate-report`
+
+Generate a markdown test report from test summary input.
+
+### `GET /api/ai/history/recent`
+
+Return recent generation records for dashboard display and recall.

@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import ai, export
 from app.core.config import get_settings
+from app.core.database import Base, engine
+from app.models import GenerationRecord, TestcaseRecord
 
 settings = get_settings()
 app = FastAPI(title=settings.app_name)
@@ -17,6 +19,11 @@ app.add_middleware(
 
 app.include_router(ai.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/health")
