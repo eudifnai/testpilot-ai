@@ -1,10 +1,13 @@
-import { ClipboardList, FileSearch, LayoutDashboard } from "lucide-react";
+import { Bug, ClipboardList, FileCode2, FileSearch, LayoutDashboard, ScrollText } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 
 const navigation = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/requirement-analysis", label: "Requirement Analysis", icon: FileSearch },
   { to: "/testcase-generator", label: "Testcase Generator", icon: ClipboardList },
+  { to: "/api-test-generator", label: "API Test Generator", icon: FileCode2 },
+  { to: "/bug-analyzer", label: "Bug Analyzer", icon: Bug },
+  { to: "/test-report", label: "Test Report", icon: ScrollText },
 ];
 
 function linkClassName(isActive: boolean) {
@@ -38,7 +41,7 @@ export function AppShell() {
             })}
           </nav>
           <div className="rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-500">
-            P0 focus: requirement input, testcase generation, table review, and Excel export.
+            Current scope: requirement analysis, testcase generation, API test design, bug analysis, test report drafting, and recent history recall.
           </div>
         </aside>
         <main className="min-w-0">

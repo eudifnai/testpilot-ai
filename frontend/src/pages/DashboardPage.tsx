@@ -1,7 +1,12 @@
-import { ArrowRight, ClipboardList, FileSpreadsheet, FileText } from "lucide-react";
+import { ArrowRight, Bug, ClipboardList, FileCode2, FileSpreadsheet, FileText, ScrollText } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { HistoryList } from "../components/HistoryList";
 import { MetricCard } from "../components/MetricCard";
 import { PageHeader } from "../components/PageHeader";
+import { SectionCard } from "../components/SectionCard";
+import { getRecentHistory } from "../services/api";
+import type { HistoryRecord } from "../types/ai";
 
 const quickActions = [
   {
@@ -22,9 +27,33 @@ const quickActions = [
     to: "/testcase-generator",
     icon: FileSpreadsheet,
   },
+  {
+    title: "API test design",
+    description: "Generate request coverage and automation hints from an API document or curl snippet.",
+    to: "/api-test-generator",
+    icon: FileCode2,
+  },
+  {
+    title: "Bug analysis",
+    description: "Turn issue notes, logs, and expected behavior into a structured bug report and checklist.",
+    to: "/bug-analyzer",
+    icon: Bug,
+  },
+  {
+    title: "Test report",
+    description: "Draft a markdown test report with scope, risks, defect summary, and release recommendation.",
+    to: "/test-report",
+    icon: ScrollText,
+  },
 ];
 
 export function DashboardPage() {
+  const [history, setHistory] = useState<HistoryRecord[]>([]);
+
+  useEffect(() => {
+    getRecentHistory().then((response) => setHistory(response.records)).catch(() => setHistory([]));
+  }, []);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -34,10 +63,10 @@ export function DashboardPage() {
       />
       <div className="grid gap-4 md:grid-cols-3">
         <MetricCard label="P0 coverage" value="3" helper="Dashboard, requirement analysis, and testcase generation are ready to use." />
-        <MetricCard label="Backend endpoints" value="3" helper="Requirement analysis, testcase generation, and Excel export are wired through FastAPI." />
+        <MetricCard label="Backend endpoints" value="7" helper="Core AI workflows and history retrieval are wired through FastAPI." />
         <MetricCard label="Fallback mode" value="Ready" helper="The backend can return deterministic local output when no AI credentials are configured." />
       </div>
-      <section className="grid gap-4 lg:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {quickActions.map((item) => {
           const Icon = item.icon;
           return (
@@ -61,6 +90,12 @@ export function DashboardPage() {
           );
         })}
       </section>
+      <SectionCard
+        title="Recent generation history"
+        description="Review the latest generated outputs from the shared backend history store."
+      >
+        <HistoryList records={history} />
+      </SectionCard>
     </div>
   );
 }

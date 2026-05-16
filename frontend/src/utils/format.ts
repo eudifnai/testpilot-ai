@@ -27,3 +27,14 @@ export function formatTestcasesForCopy(
     )
     .join("\n\n");
 }
+
+export function formatObjectForCopy(value: Record<string, string | string[]>) {
+  return Object.entries(value)
+    .map(([key, content]) => {
+      if (Array.isArray(content)) {
+        return `${key}\n${content.map((item) => `- ${item}`).join("\n")}`;
+      }
+      return `${key}\n${content}`;
+    })
+    .join("\n\n");
+}
