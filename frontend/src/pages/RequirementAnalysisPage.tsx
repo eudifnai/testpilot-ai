@@ -1,5 +1,5 @@
 import { Copy, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GhostButton } from "../components/GhostButton";
 import { PageHeader } from "../components/PageHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -9,6 +9,7 @@ import { analyzeRequirement } from "../services/api";
 import type { RequirementAnalysisResult } from "../types/ai";
 import { copyText } from "../utils/clipboard";
 import { formatAnalysisForCopy } from "../utils/format";
+import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const sampleRequirement = `Users can log in with a mobile number and password. Mobile number must contain 11 digits. Password length must be between 6 and 20 characters. If the password is entered incorrectly five times in a row, the account is locked for 30 minutes.`;
 
@@ -31,6 +32,13 @@ export function RequirementAnalysisPage() {
       Questions: result.questions,
     });
   }, [result]);
+
+  useEffect(() => {
+    const draft = consumeHistoryDraft();
+    if (draft?.type === "requirement_analysis" || draft?.type === "testcase_generation") {
+      setRequirementText(draft.inputText);
+    }
+  }, []);
 
   async function handleGenerate() {
     setIsLoading(true);

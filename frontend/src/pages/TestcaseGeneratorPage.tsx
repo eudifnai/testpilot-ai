@@ -1,15 +1,17 @@
 import { Copy, Download, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GhostButton } from "../components/GhostButton";
 import { PageHeader } from "../components/PageHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { SectionCard } from "../components/SectionCard";
+import { TestcaseEditor } from "../components/TestcaseEditor";
 import { TestcaseTable } from "../components/TestcaseTable";
 import { exportTestcases, generateTestcases } from "../services/api";
 import type { Testcase } from "../types/ai";
 import { copyText } from "../utils/clipboard";
 import { downloadBlob } from "../utils/download";
 import { formatTestcasesForCopy } from "../utils/format";
+import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const testcaseOptions = [
   { id: "functional", label: "Functional" },
@@ -25,11 +27,23 @@ export function TestcaseGeneratorPage() {
   const [caseTypes, setCaseTypes] = useState<string[]>(["functional", "boundary", "exception"]);
   const [caseCount, setCaseCount] = useState(12);
   const [testcases, setTestcases] = useState<Testcase[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState("");
 
   const testcaseCopyText = useMemo(() => formatTestcasesForCopy(testcases), [testcases]);
+  const selectedTestcase = useMemo(
+    () => testcases.find((item) => item.case_id === selectedCaseId) ?? null,
+    [selectedCaseId, testcases]
+  );
+
+  useEffect(() => {
+    const draft = consumeHistoryDraft();
+    if (draft?.type === "testcase_generation" || draft?.type === "requirement_analysis") {
+      setRequirementText(draft.inputText);
+    }
+  }, []);
 
   function toggleCaseType(caseType: string) {
     setCaseTypes((current) =>
@@ -47,6 +61,7 @@ export function TestcaseGeneratorPage() {
     try {
       const response = await generateTestcases(requirementText, caseTypes, caseCount);
       setTestcases(response.testcases);
+      setSelectedCaseId(response.testcases[0]?.case_id ?? "");
     } catch {
       setError("Testcase generation failed. Please confirm the backend is running and try again.");
     } finally {
@@ -71,6 +86,10 @@ export function TestcaseGeneratorPage() {
       return;
     }
     await copyText(testcaseCopyText);
+  }
+
+  function handleTestcaseChange(next: Testcase) {
+    setTestcases((current) => current.map((item) => (item.case_id === next.case_id ? next : item)));
   }
 
   return (
@@ -154,7 +173,7 @@ export function TestcaseGeneratorPage() {
 
         <SectionCard
           title="Generated testcase table"
-          description="Review the cases in place before copying or exporting."
+          description="Review the cases in place before copying or exporting. Click a row to edit it."
         >
           {testcases.length > 0 ? (
             <div className="space-y-4">
@@ -162,13 +181,23 @@ export function TestcaseGeneratorPage() {
                 <span>{testcases.length} cases generated</span>
                 <span>{caseTypes.length} selected case type groups</span>
               </div>
-              <TestcaseTable testcases={testcases} />
+              <TestcaseTable
+                testcases={testcases}
+                selectedCaseId={selectedCaseId}
+                onSelect={setSelectedCaseId}
+              />
             </div>
           ) : (
             <p className="text-sm leading-6 text-slate-500">Generate testcases to preview them here in table form.</p>
           )}
         </SectionCard>
       </div>
+
+      <TestcaseEditor
+        testcase={selectedTestcase}
+        onChange={handleTestcaseChange}
+        onClose={() => setSelectedCaseId("")}
+      />
     </div>
   );
 }

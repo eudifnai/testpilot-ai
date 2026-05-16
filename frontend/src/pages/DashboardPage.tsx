@@ -1,12 +1,13 @@
 import { ArrowRight, Bug, ClipboardList, FileCode2, FileSpreadsheet, FileText, ScrollText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { HistoryDetailPanel } from "../components/HistoryDetailPanel";
 import { HistoryList } from "../components/HistoryList";
 import { MetricCard } from "../components/MetricCard";
 import { PageHeader } from "../components/PageHeader";
 import { SectionCard } from "../components/SectionCard";
-import { getRecentHistory } from "../services/api";
-import type { HistoryRecord } from "../types/ai";
+import { getHistoryDetail, getRecentHistory } from "../services/api";
+import type { HistoryDetail, HistoryRecord } from "../types/ai";
 
 const quickActions = [
   {
@@ -49,10 +50,15 @@ const quickActions = [
 
 export function DashboardPage() {
   const [history, setHistory] = useState<HistoryRecord[]>([]);
+  const [selectedHistoryDetail, setSelectedHistoryDetail] = useState<HistoryDetail | null>(null);
 
   useEffect(() => {
     getRecentHistory().then((response) => setHistory(response.records)).catch(() => setHistory([]));
   }, []);
+
+  function handleSelectHistory(record: HistoryRecord) {
+    getHistoryDetail(record.id).then(setSelectedHistoryDetail).catch(() => setSelectedHistoryDetail(null));
+  }
 
   return (
     <div className="space-y-6">
@@ -90,12 +96,15 @@ export function DashboardPage() {
           );
         })}
       </section>
-      <SectionCard
-        title="Recent generation history"
-        description="Review the latest generated outputs from the shared backend history store."
-      >
-        <HistoryList records={history} />
-      </SectionCard>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <SectionCard
+          title="Recent generation history"
+          description="Review the latest generated outputs from the shared backend history store."
+        >
+          <HistoryList records={history} onSelect={handleSelectHistory} />
+        </SectionCard>
+        <HistoryDetailPanel detail={selectedHistoryDetail} />
+      </div>
     </div>
   );
 }

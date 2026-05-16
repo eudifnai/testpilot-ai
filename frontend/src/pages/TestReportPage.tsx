@@ -1,5 +1,5 @@
 import { Copy, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { GhostButton } from "../components/GhostButton";
 import { PageHeader } from "../components/PageHeader";
@@ -7,6 +7,7 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { SectionCard } from "../components/SectionCard";
 import { generateReport } from "../services/api";
 import { copyText } from "../utils/clipboard";
+import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const initialState = {
   project_name: "TestPilot AI",
@@ -23,6 +24,18 @@ export function TestReportPage() {
   const [reportMarkdown, setReportMarkdown] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const draft = consumeHistoryDraft();
+    if (draft?.type === "test_report") {
+      try {
+        const parsed = JSON.parse(draft.inputText) as typeof initialState;
+        setForm((current) => ({ ...current, ...parsed }));
+      } catch {
+        // ignore malformed draft payload
+      }
+    }
+  }, []);
 
   async function handleGenerate() {
     setIsLoading(true);

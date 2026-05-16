@@ -2,6 +2,7 @@ import axios from "axios";
 import type {
   APITestGenerationResult,
   BugAnalysisResult,
+  HistoryDetail,
   HistoryListResult,
   RequirementAnalysisResult,
   Testcase,
@@ -75,5 +76,10 @@ export async function generateReport(payload: {
 
 export async function getRecentHistory(limit = 8) {
   const response = await apiClient.get<HistoryListResult>(`/ai/history/recent?limit=${limit}`);
+  return response.data;
+}
+
+export async function getHistoryDetail(recordId: number) {
+  const response = await apiClient.get<HistoryDetail>(`/ai/history/${recordId}`);
   return response.data;
 }

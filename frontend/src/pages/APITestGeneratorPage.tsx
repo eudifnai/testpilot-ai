@@ -1,5 +1,5 @@
 import { Copy, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { APITestTable } from "../components/APITestTable";
 import { GhostButton } from "../components/GhostButton";
 import { KeyValueGrid } from "../components/KeyValueGrid";
@@ -10,6 +10,7 @@ import { SectionCard } from "../components/SectionCard";
 import { generateApiTests } from "../services/api";
 import type { APITestGenerationResult } from "../types/ai";
 import { copyText } from "../utils/clipboard";
+import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const sampleApiDoc = `POST /api/login
 Request body:
@@ -30,6 +31,13 @@ export function APITestGeneratorPage() {
     }
     return JSON.stringify(result, null, 2);
   }, [result]);
+
+  useEffect(() => {
+    const draft = consumeHistoryDraft();
+    if (draft?.type === "api_test_generation") {
+      setApiDoc(draft.inputText);
+    }
+  }, []);
 
   async function handleGenerate() {
     setIsLoading(true);

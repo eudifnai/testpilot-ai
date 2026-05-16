@@ -2,9 +2,11 @@ import type { Testcase } from "../types/ai";
 
 interface TestcaseTableProps {
   testcases: Testcase[];
+  selectedCaseId?: string;
+  onSelect?: (caseId: string) => void;
 }
 
-export function TestcaseTable({ testcases }: TestcaseTableProps) {
+export function TestcaseTable({ testcases, selectedCaseId, onSelect }: TestcaseTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200">
       <div className="overflow-x-auto">
@@ -23,7 +25,15 @@ export function TestcaseTable({ testcases }: TestcaseTableProps) {
           </thead>
           <tbody className="divide-y divide-slate-200">
             {testcases.map((item) => (
-              <tr key={item.case_id} className="align-top">
+              <tr
+                key={item.case_id}
+                className={[
+                  "align-top transition",
+                  onSelect ? "cursor-pointer hover:bg-slate-50" : "",
+                  selectedCaseId === item.case_id ? "bg-brand-50/50" : "",
+                ].join(" ")}
+                onClick={() => onSelect?.(item.case_id)}
+              >
                 <td className="px-4 py-4 text-sm font-medium text-slate-900">{item.case_id}</td>
                 <td className="px-4 py-4 text-sm text-slate-600">{item.module}</td>
                 <td className="px-4 py-4 text-sm text-slate-600">{item.title}</td>

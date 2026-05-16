@@ -67,3 +67,11 @@ export interface HistoryRecord {
 export interface HistoryListResult {
   records: HistoryRecord[];
 }
+
+export interface HistoryDetail {
+  id: number;
+  type: string;
+  input_text: string;
+  output_json: string;
+  created_at: string;
+}

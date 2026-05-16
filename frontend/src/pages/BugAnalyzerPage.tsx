@@ -1,5 +1,5 @@
 import { Copy, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GhostButton } from "../components/GhostButton";
 import { KeyValueGrid } from "../components/KeyValueGrid";
 import { PageHeader } from "../components/PageHeader";
@@ -10,6 +10,7 @@ import { analyzeBug } from "../services/api";
 import type { BugAnalysisResult } from "../types/ai";
 import { copyText } from "../utils/clipboard";
 import { formatObjectForCopy } from "../utils/format";
+import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const initialForm = {
   title: "Login fails after valid credentials",
@@ -42,6 +43,18 @@ export function BugAnalyzerPage() {
       "Suggested Additional Info": result.suggested_additional_info,
     });
   }, [result]);
+
+  useEffect(() => {
+    const draft = consumeHistoryDraft();
+    if (draft?.type === "bug_analysis") {
+      try {
+        const parsed = JSON.parse(draft.inputText) as typeof initialForm;
+        setForm((current) => ({ ...current, ...parsed }));
+      } catch {
+        // ignore malformed draft payload
+      }
+    }
+  }, []);
 
   async function handleAnalyze() {
     setIsLoading(true);

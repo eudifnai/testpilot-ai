@@ -12,6 +12,8 @@ TestPilot AI is an AI-assisted testing workbench for QA engineers and small deli
 - Bug analysis with structured report, causes, and developer checklist
 - Markdown test report generation
 - Recent generation history backed by SQLite
+- Editable testcase review before copy or Excel export
+- History detail view with workflow replay into generation pages
 - Unified backend AI service wrapper with local fallback output
 - Local fallback mode when no OpenAI-compatible credentials are configured
 
@@ -107,9 +109,10 @@ Notes:
 2. Paste a requirement into `Requirement Analysis` or `Testcase Generator`
 3. Generate results from the backend
 4. Review cases in the table or copy the generated content
-5. Export generated testcases to Excel when needed
-6. Use `API Test Generator`, `Bug Analyzer`, and `Test Report` for the broader QA workflow
-7. Review the latest generation results from the dashboard history panel
+5. Click any generated testcase row to edit it before export
+6. Export generated testcases to Excel when needed
+7. Use `API Test Generator`, `Bug Analyzer`, and `Test Report` for the broader QA workflow
+8. Review recent generation results from the dashboard history panel and replay them back into the relevant page
 
 ## Delivery Status
 
