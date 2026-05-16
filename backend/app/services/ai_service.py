@@ -338,7 +338,7 @@ class AIService:
         return questions
 
     def _guess_module_name(self, feature: str) -> str:
-        tokens = re.split(r"[,，:：\\- ]", feature)
+        tokens = re.split(r"[,，:：\- ]", feature)
         return tokens[0][:24] if tokens and tokens[0] else "Core Module"
 
     def _guess_api_name(self, api_doc: str) -> str:
