@@ -1,3 +1,17 @@
 # Prompt Notes
 
-This document will track the production prompts used by the backend AI service.
+## Requirement Analysis
+
+- Structured JSON output
+- Grounded in requirement text only
+- Must surface ambiguity in `questions`
+
+## Testcase Generation
+
+- Structured JSON testcase array
+- Coverage for requested testcase types
+- Verifiable expected result and executable steps
+
+## Fallback Mode
+
+When no OpenAI-compatible credentials are configured, the backend returns deterministic local output so the MVP remains runnable in local development.
