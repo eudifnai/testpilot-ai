@@ -156,6 +156,7 @@ Current coverage focus:
 - API reference: [docs/API_SPEC.md](E:\ai_project\testpilot-ai\docs\API_SPEC.md)
 - Prompt notes: [docs/PROMPTS.md](E:\ai_project\testpilot-ai\docs\PROMPTS.md)
 - Release checklist: [docs/RELEASE_CHECKLIST.md](E:\ai_project\testpilot-ai\docs\RELEASE_CHECKLIST.md)
+- Delivery summary: [docs/DELIVERY_SUMMARY.md](E:\ai_project\testpilot-ai\docs\DELIVERY_SUMMARY.md)
 
 ## Local Workflow
 
