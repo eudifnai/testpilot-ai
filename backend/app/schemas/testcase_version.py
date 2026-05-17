@@ -12,6 +12,11 @@ class TestcaseVersionSaveRequest(BaseModel):
     testcases: list[Testcase] = Field(default_factory=list)
 
 
+class TestcaseVersionUpdateRequest(BaseModel):
+    version_name: str = Field(..., min_length=2)
+    notes: str = ""
+
+
 class TestcaseVersionSummary(BaseModel):
     id: int
     version_name: str

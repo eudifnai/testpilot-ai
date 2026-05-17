@@ -10,6 +10,7 @@ from app.schemas.testcase_version import (
     TestcaseVersionListResponse,
     TestcaseVersionSaveRequest,
     TestcaseVersionSummary,
+    TestcaseVersionUpdateRequest,
 )
 
 
@@ -53,6 +54,29 @@ class TestcaseVersionService:
         if record is None:
             return None
         return self._to_detail(record)
+
+    def update_version(
+        self,
+        db: Session,
+        version_id: int,
+        payload: TestcaseVersionUpdateRequest,
+    ) -> TestcaseVersionDetailResponse | None:
+        record = db.query(TestcaseVersion).filter(TestcaseVersion.id == version_id).first()
+        if record is None:
+            return None
+        record.version_name = payload.version_name
+        record.notes = payload.notes
+        db.commit()
+        db.refresh(record)
+        return self._to_detail(record)
+
+    def delete_version(self, db: Session, version_id: int) -> bool:
+        record = db.query(TestcaseVersion).filter(TestcaseVersion.id == version_id).first()
+        if record is None:
+            return False
+        db.delete(record)
+        db.commit()
+        return True
 
     def _to_detail(self, record: TestcaseVersion) -> TestcaseVersionDetailResponse:
         return TestcaseVersionDetailResponse(

@@ -101,3 +101,11 @@ List saved testcase versions.
 ### `GET /api/testcase-versions/{id}`
 
 Load a saved testcase version with its testcase payload.
+
+### `PUT /api/testcase-versions/{id}`
+
+Rename a saved testcase version or update its notes.
+
+### `DELETE /api/testcase-versions/{id}`
+
+Delete a saved testcase version snapshot.
