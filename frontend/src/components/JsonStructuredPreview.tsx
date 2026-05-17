@@ -1,3 +1,7 @@
+import { Copy } from "lucide-react";
+import { copyText } from "../utils/clipboard";
+import { GhostButton } from "./GhostButton";
+
 interface JsonStructuredPreviewProps {
   raw: string;
 }
@@ -29,7 +33,16 @@ export function JsonStructuredPreview({ raw }: JsonStructuredPreviewProps) {
       <div className="grid gap-3">
         {Object.entries(parsed).map(([key, value]) => (
           <div key={key} className="rounded-lg bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{key}</p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{key}</p>
+              <GhostButton
+                compact
+                onClick={() => copyText(typeof value === "string" ? value : JSON.stringify(value, null, 2))}
+                icon={<Copy className="h-4 w-4" />}
+              >
+                Copy
+              </GhostButton>
+            </div>
             <div className="mt-3">{renderValue(value)}</div>
           </div>
         ))}

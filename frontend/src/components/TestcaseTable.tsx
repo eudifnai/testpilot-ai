@@ -1,9 +1,25 @@
+import { Copy } from "lucide-react";
 import type { Testcase } from "../types/ai";
+import { copyText } from "../utils/clipboard";
+import { GhostButton } from "./GhostButton";
 
 interface TestcaseTableProps {
   testcases: Testcase[];
   selectedCaseId?: string;
   onSelect?: (caseId: string) => void;
+}
+
+function formatSingleTestcase(testcase: Testcase) {
+  return [
+    `${testcase.case_id} | ${testcase.case_type} | ${testcase.priority}`,
+    `Module: ${testcase.module}`,
+    `Title: ${testcase.title}`,
+    `Precondition: ${testcase.precondition}`,
+    `Steps:\n${testcase.steps.map((step, index) => `${index + 1}. ${step}`).join("\n")}`,
+    `Test Data: ${testcase.test_data}`,
+    `Expected Result: ${testcase.expected_result}`,
+    `Remark: ${testcase.remark || "-"}`,
+  ].join("\n\n");
 }
 
 export function TestcaseTable({ testcases, selectedCaseId, onSelect }: TestcaseTableProps) {
@@ -13,7 +29,7 @@ export function TestcaseTable({ testcases, selectedCaseId, onSelect }: TestcaseT
         <table className="min-w-full divide-y divide-slate-200 bg-white">
           <thead className="bg-slate-50">
             <tr>
-              {["Case ID", "Module", "Title", "Priority", "Type", "Steps", "Expected Result"].map((header) => (
+              {["Case ID", "Module", "Title", "Priority", "Type", "Steps", "Expected Result", "Actions"].map((header) => (
                 <th
                   key={header}
                   className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
@@ -47,6 +63,18 @@ export function TestcaseTable({ testcases, selectedCaseId, onSelect }: TestcaseT
                   </ol>
                 </td>
                 <td className="px-4 py-4 text-sm text-slate-600">{item.expected_result}</td>
+                <td className="px-4 py-4 text-sm text-slate-600">
+                  <GhostButton
+                    compact
+                    icon={<Copy className="h-4 w-4" />}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      copyText(formatSingleTestcase(item));
+                    }}
+                  >
+                    Copy
+                  </GhostButton>
+                </td>
               </tr>
             ))}
           </tbody>

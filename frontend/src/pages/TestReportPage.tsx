@@ -1,4 +1,4 @@
-import { Copy, Sparkles } from "lucide-react";
+import { Copy, Download, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { GhostButton } from "../components/GhostButton";
@@ -7,6 +7,7 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { SectionCard } from "../components/SectionCard";
 import { generateReport } from "../services/api";
 import { copyText } from "../utils/clipboard";
+import { downloadTextFile } from "../utils/download";
 import { consumeHistoryDraft } from "../utils/historyDraft";
 
 const initialState = {
@@ -57,9 +58,21 @@ export function TestReportPage() {
         title="Draft a test report in markdown"
         description="Capture project context, scope, results, defect summary, and risks. The generated report stays easy to review and copy into release notes or handoff docs."
         actions={
-          <GhostButton onClick={() => reportMarkdown && copyText(reportMarkdown)} disabled={!reportMarkdown} icon={<Copy className="h-4 w-4" />}>
-            Copy markdown
-          </GhostButton>
+          <>
+            <GhostButton onClick={() => reportMarkdown && copyText(reportMarkdown)} disabled={!reportMarkdown} icon={<Copy className="h-4 w-4" />}>
+              Copy markdown
+            </GhostButton>
+            <GhostButton
+              onClick={() =>
+                reportMarkdown &&
+                downloadTextFile(reportMarkdown, `${(form.project_name || "test-report").replace(/\s+/g, "-").toLowerCase()}.md`, "text/markdown;charset=utf-8")
+              }
+              disabled={!reportMarkdown}
+              icon={<Download className="h-4 w-4" />}
+            >
+              Export .md
+            </GhostButton>
+          </>
         }
       />
 
