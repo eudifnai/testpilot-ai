@@ -107,6 +107,12 @@ Notes:
 - `POST /api/ai/analyze-bug`
 - `POST /api/ai/generate-report`
 - `GET /api/ai/history/recent`
+- `GET /api/ai/history/{id}`
+- `POST /api/testcase-versions`
+- `GET /api/testcase-versions`
+- `GET /api/testcase-versions/{id}`
+- `PUT /api/testcase-versions/{id}`
+- `DELETE /api/testcase-versions/{id}`
 - `POST /api/export/testcases`
 
 ## Testing
@@ -149,6 +155,7 @@ Current coverage focus:
 - Demo walkthrough data: [docs/DEMO_DATA.md](E:\ai_project\testpilot-ai\docs\DEMO_DATA.md)
 - API reference: [docs/API_SPEC.md](E:\ai_project\testpilot-ai\docs\API_SPEC.md)
 - Prompt notes: [docs/PROMPTS.md](E:\ai_project\testpilot-ai\docs\PROMPTS.md)
+- Release checklist: [docs/RELEASE_CHECKLIST.md](E:\ai_project\testpilot-ai\docs\RELEASE_CHECKLIST.md)
 
 ## Local Workflow
 
@@ -171,10 +178,13 @@ Current coverage focus:
 - Done: bug analysis page and endpoint
 - Done: test report page and endpoint
 - Done: SQLite-backed generation history
+- Done: testcase editing, replay, and snapshot version management
+- Done: backend regression tests and production env templates
+- Done: demo data and release checklist documentation
 - Done: startup documentation
 
 ## Roadmap
 
-- Next: refine prompts, add richer testcase editing, and preserve testcase versions
+- Next: refine prompts and add richer structured editing workflows
 - Next: Jira and collaboration-tool integrations
-- Later: automation generation and broader project management workflows
+- Later: automation generation, project management workflows, and deeper reporting
