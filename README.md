@@ -109,6 +109,39 @@ Notes:
 - `GET /api/ai/history/recent`
 - `POST /api/export/testcases`
 
+## Testing
+
+Backend automated tests:
+
+```bash
+cd backend
+.venv\Scripts\activate
+pytest
+```
+
+Current coverage focus:
+
+- requirement analysis API
+- testcase generation API
+- Excel export API
+- API test generation, bug analysis, and report generation APIs
+- history detail API
+- testcase version save, load, update, and delete
+
+## Deployment Notes
+
+### Backend
+
+- run with `uvicorn app.main:app --host 0.0.0.0 --port 8000`
+- set `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `MODEL_NAME`, and `DATABASE_URL` in the runtime environment
+- use a persistent database path or external database instead of ephemeral local storage in production
+
+### Frontend
+
+- build with `npm run build`
+- serve `frontend/dist/` with any static file server or reverse proxy
+- point `VITE_API_BASE_URL` to the deployed backend API when not using a local proxy
+
 ## Local Workflow
 
 1. Open the dashboard
