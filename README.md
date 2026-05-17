@@ -135,12 +135,20 @@ Current coverage focus:
 - run with `uvicorn app.main:app --host 0.0.0.0 --port 8000`
 - set `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `MODEL_NAME`, and `DATABASE_URL` in the runtime environment
 - use a persistent database path or external database instead of ephemeral local storage in production
+- start from [backend/.env.production.example](E:\ai_project\testpilot-ai\backend\.env.production.example) when preparing a production deployment
 
 ### Frontend
 
 - build with `npm run build`
 - serve `frontend/dist/` with any static file server or reverse proxy
 - point `VITE_API_BASE_URL` to the deployed backend API when not using a local proxy
+- start from [frontend/.env.production.example](E:\ai_project\testpilot-ai\frontend\.env.production.example) for production environment variables
+
+## Demo Assets
+
+- Demo walkthrough data: [docs/DEMO_DATA.md](E:\ai_project\testpilot-ai\docs\DEMO_DATA.md)
+- API reference: [docs/API_SPEC.md](E:\ai_project\testpilot-ai\docs\API_SPEC.md)
+- Prompt notes: [docs/PROMPTS.md](E:\ai_project\testpilot-ai\docs\PROMPTS.md)
 
 ## Local Workflow
 
