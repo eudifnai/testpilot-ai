@@ -15,6 +15,7 @@ TestPilot AI is an AI-assisted testing workbench for QA engineers and small deli
 - Editable testcase review before copy or Excel export
 - History detail view with workflow replay into generation pages
 - Saved testcase version snapshots with reload support
+- Testcase version rename and delete actions
 - Structured JSON preview inside history detail
 - Unified backend AI service wrapper with local fallback output
 - Local fallback mode when no OpenAI-compatible credentials are configured

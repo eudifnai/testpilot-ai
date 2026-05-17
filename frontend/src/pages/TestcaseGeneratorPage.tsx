@@ -8,11 +8,13 @@ import { TestcaseEditor } from "../components/TestcaseEditor";
 import { TestcaseTable } from "../components/TestcaseTable";
 import { TestcaseVersionPanel } from "../components/TestcaseVersionPanel";
 import {
+  deleteTestcaseVersion,
   exportTestcases,
   generateTestcases,
   getTestcaseVersion,
   getTestcaseVersions,
   saveTestcaseVersion,
+  updateTestcaseVersion,
 } from "../services/api";
 import type { Testcase, TestcaseVersionSummary } from "../types/ai";
 import { copyText } from "../utils/clipboard";
@@ -156,6 +158,41 @@ export function TestcaseGeneratorPage() {
     }
   }
 
+  async function handleRenameVersion(versionId: number, nextName: string, nextNotes: string) {
+    setError("");
+    try {
+      const updated = await updateTestcaseVersion(versionId, {
+        version_name: nextName.trim() || "Untitled snapshot",
+        notes: nextNotes,
+      });
+      setSelectedVersionId(updated.id);
+      if (selectedVersionId === updated.id) {
+        setVersionName(updated.version_name);
+        setVersionNotes(updated.notes);
+      }
+      setSaveMessage(`Updated ${updated.version_name}`);
+      await refreshVersions();
+    } catch {
+      setError("Updating testcase version failed. Please try again.");
+    }
+  }
+
+  async function handleDeleteVersion(versionId: number) {
+    setError("");
+    try {
+      await deleteTestcaseVersion(versionId);
+      if (selectedVersionId === versionId) {
+        setSelectedVersionId(undefined);
+        setSaveMessage("Deleted selected version");
+      } else {
+        setSaveMessage("Deleted version");
+      }
+      await refreshVersions();
+    } catch {
+      setError("Deleting testcase version failed. Please try again.");
+    }
+  }
+
   function handleTestcaseChange(next: Testcase) {
     setTestcases((current) => current.map((item) => (item.case_id === next.case_id ? next : item)));
   }
@@ -291,6 +328,8 @@ export function TestcaseGeneratorPage() {
         versions={savedVersions}
         selectedVersionId={selectedVersionId}
         onLoad={handleLoadVersion}
+        onRename={handleRenameVersion}
+        onDelete={handleDeleteVersion}
       />
 
       <TestcaseEditor

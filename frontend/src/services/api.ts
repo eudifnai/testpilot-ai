@@ -107,3 +107,13 @@ export async function getTestcaseVersion(versionId: number) {
   const response = await apiClient.get<TestcaseVersionDetail>(`/testcase-versions/${versionId}`);
   return response.data;
 }
+
+export async function updateTestcaseVersion(versionId: number, payload: { version_name: string; notes: string }) {
+  const response = await apiClient.put<TestcaseVersionDetail>(`/testcase-versions/${versionId}`, payload);
+  return response.data;
+}
+
+export async function deleteTestcaseVersion(versionId: number) {
+  const response = await apiClient.delete<{ message: string }>(`/testcase-versions/${versionId}`);
+  return response.data;
+}
